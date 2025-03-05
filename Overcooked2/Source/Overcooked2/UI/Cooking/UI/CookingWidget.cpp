@@ -136,6 +136,7 @@ void UCookingWidget::CreateNewOrder(FOrder& order)
 void UCookingWidget::MoveNewOrder()
 {
 
+
     if (Orders[NewOrderNum] == nullptr) return;
 
     FVector2D curpos = Orders[NewOrderNum]->GetRenderTransform().Translation;
@@ -147,7 +148,10 @@ void UCookingWidget::MoveNewOrder()
         ArrivePos = ImageOffset;
         for (int i = 0; i < CurOrderCount - 1; i++)
         {
-            ArrivePos += ImageSize + ImageOffset;
+            UImage* img = FindChildImage("OrderBackground_", Orders[i]);
+
+            float scale = img->GetRenderTransform().Scale.X;
+            ArrivePos += ImageSize * scale + ImageOffset;
         }
 
     }
@@ -165,13 +169,13 @@ void UCookingWidget::MoveNewOrder()
         MoveTimeElapsed = 0.0f;
         IngredientTimeElapsed = 0.0f;
 
-
+        if (GetWorld()->GetTimerManager().IsTimerActive(IngredientTimerHandle)) return;
 
         GetWorld()->GetTimerManager().ClearTimer(IngredientTimerHandle);
         GetWorld()->GetTimerManager().SetTimer(IngredientTimerHandle, this, &UCookingWidget::UpdateIngredientImagePosition, 0.01f, true);
 
 
-        GetWorld()->GetTimerManager().ClearTimer(MoveTimerHandle);
+
         return;
     }
     else
@@ -301,6 +305,7 @@ void UCookingWidget::UpdateIngredientImagePosition()
         IngredientTimeElapsed = 0.0f;
 
         GetWorld()->GetTimerManager().ClearTimer(IngredientTimerHandle);
+        GetWorld()->GetTimerManager().ClearTimer(MoveTimerHandle);
         return;
 
     }
@@ -347,14 +352,18 @@ void UCookingWidget::UpdateImagePosition()
     for (int i = CompleteOrderNum; i < CurOrderCount; i++)
     {
 
-        int lastnum = 0;
-
         Orders[i] = Orders[i + 1];
-        const FWidgetTransform& trfm = Orders[i]->GetRenderTransform();
-        FinalPos = trfm.Translation.X - ImageSize - ImageOffset;
+        FinalPos = ImageOffset;
+
+        for (int j = 0; j < i; j++)
+        {
+            UImage* img = FindChildImage("OrderBackground_", Orders[j]);
+            float scale = img->GetRenderTransform().Scale.X;
+
+            FinalPos += ImageSize * scale + ImageOffset;
+        }
 
         Orders[i]->SetRenderTranslation({ FinalPos, 0.0f });
-
     }
 
     Orders[CurOrderCount] = Panel;
