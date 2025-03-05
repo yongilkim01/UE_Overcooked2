@@ -14,8 +14,8 @@ APlate::APlate()
 	CookingType = ECookingType::ECT_PLATE;
 
 	IngredientMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("IngredientMesh"));
-	PlateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlateMesh"));
-	RootComponent = PlateMesh;
+	//PlateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlateMesh"));
+	//RootComponent = PlateMesh;
 
 	Rotation = FRotator(0.0f, 0.0f, 90.0f);
 	SetActorRelativeRotation(Rotation);
@@ -40,6 +40,11 @@ void APlate::Tick(float DeltaTime)
 
 bool APlate::IsDirtyPlate()
 {
+	if (nullptr == StaticMeshComponent)
+	{
+		return false;
+	}
+
 	return PlateState == EPlateState::DIRTY;
 }
 
@@ -89,7 +94,7 @@ bool APlate::Add(AIngredient* Ingredient)
 	{
 		return false;
 	}
-	if (nullptr == PlateMesh)
+	if (nullptr == StaticMeshComponent)
 	{
 		return false;
 	}
