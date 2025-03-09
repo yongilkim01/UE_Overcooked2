@@ -25,7 +25,6 @@ class OVERCOOKED2_API APlate : public ACooking
 	GENERATED_BODY()
 	
 public:	
-
 	// Sets default values for this actor's properties
 	APlate();
 
@@ -42,15 +41,9 @@ public:
 	void WashPlate();
 
 	UFUNCTION(BlueprintCallable)
-	void SetPlateState(EPlateState State)
-	{
-		PlateState = State;
-	}
-
-	void CookCheck();
+	void SetPlateState(EPlateState State);
 
 
-	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -62,6 +55,8 @@ protected:
 
 	void CheckAndChangeState(class AIngredient* Ingredient);
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 private:
 	TArray<FIngredientCookDataRow> CookingDataTable;
 
@@ -71,15 +66,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* IngredientMesh = nullptr; // 재료
 
-	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
-	//UStaticMeshComponent* PlateMesh = nullptr; // 접시
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	EPlateState PlateState = EPlateState::NONE;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	EIngredientState PrveState = EIngredientState::EIS_NONE;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
-	FRotator Rotation = FRotator::ZeroRotator;
 };

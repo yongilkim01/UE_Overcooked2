@@ -4,6 +4,8 @@
 #include "LevelContent/Cook/Plate.h"
 #include <LevelContent/Cook/Ingredient.h>
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
+#include <Global/Data/OC2GlobalData.h>
 
 // Sets default values
 APlate::APlate()
@@ -14,27 +16,19 @@ APlate::APlate()
 	CookingType = ECookingType::ECT_PLATE;
 
 	IngredientMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("IngredientMesh"));
-	//PlateMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlateMesh"));
-	//RootComponent = PlateMesh;
-
-	Rotation = FRotator(0.0f, 0.0f, 90.0f);
-	SetActorRelativeRotation(Rotation);
-
-	//FVector Offset = GetActorLocation() + FVector(0.0f, 0.0f, 30.0f);
-	//IngredientMesh->AddRelativeLocation(Offset);
-
 }
 
 // Called when the game starts or when spawned
 void APlate::BeginPlay()
 {
-	Super::BeginPlay();
+	ACooking::BeginPlay();
+
 }
 
 // Called every frame
 void APlate::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	ACooking::Tick(DeltaTime);
 
 }
 
@@ -54,6 +48,11 @@ void APlate::WashPlate()
 	{
 		PlateState = EPlateState::EMPTY;
 	}
+}
+
+void APlate::SetPlateState(EPlateState State)
+{
+	PlateState = State;
 }
 
 void APlate::LoadDataTable(AIngredient* Ingredient)
@@ -88,6 +87,13 @@ void APlate::CheckAndChangeState(AIngredient* Ingredient)
 	}
 }
 
+void APlate::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APlate, PlateState);
+}
+
 bool APlate::Add(AIngredient* Ingredient)
 {
 	if (EIngredientState::EIS_NONE == Ingredient->GetCurIngredientState())
@@ -107,12 +113,15 @@ bool APlate::Add(AIngredient* Ingredient)
 
 	Ingredients.Add(Ingredient);
 
-	CookCheck();
-
-	return true;
-}
-
-void APlate::CookCheck()
-{
+	TArray<FPlateInitData> InitData = UOC2GlobalData::GetPlateMesh(GetWorld(), Ingredients);
+	if (true == InitData.IsEmpty()) // 실패처리
+	{
+		Ingredients.Pop(); 
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 
 }

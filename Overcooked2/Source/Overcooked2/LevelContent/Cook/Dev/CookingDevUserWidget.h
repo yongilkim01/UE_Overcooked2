@@ -17,6 +17,11 @@ class OVERCOOKED2_API UCookingDevUserWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+	// Network
+	UFUNCTION(BlueprintCallable, Reliable, Server)
+	void ServerSpawnIngredient(EIngredientType Type);
+	void ServerSpawnIngredient_Implementation(EIngredientType Type);
+
 
 	UFUNCTION(BlueprintCallable)
 	void AddTargetActor(ACooking* Actor)
@@ -53,9 +58,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ChangeState(EIngredientState State);
 
+
+	UFUNCTION(BlueprintCallable)
+	void StartServer();
+
+	UFUNCTION(BlueprintCallable)
+	void Connect();
+
 protected:
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	TArray<ACooking*> CookingActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Network", meta = (AllowPrivateAccess = "true"))
+	FString IP = TEXT("127.0.0.1");
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Network", meta = (AllowPrivateAccess = "true"))
+	FString Port = TEXT("30000");
 };

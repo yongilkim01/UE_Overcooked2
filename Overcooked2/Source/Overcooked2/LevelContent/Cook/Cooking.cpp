@@ -2,18 +2,16 @@
 
 
 #include "LevelContent/Cook/Cooking.h"
-#include <Global/Component/TimeEventComponent.h>
 
 // Sets default values
 ACooking::ACooking()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
 
-	TimeEvent = CreateDefaultSubobject<UTimeEventComponent>(TEXT("TimeEvent"));
-
-	//// 추상클래스여서 UPrimitiveComponent로 직접 생성 불가.
-	//PrimitiveComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrimitiveComponent"));
 
 	if (nullptr != StaticMeshComponent)
 	{
@@ -22,23 +20,20 @@ ACooking::ACooking()
 		StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
 		StaticMeshComponent->SetCollisionProfileName(TEXT("PhysicsActor"));
 	}
-	//Cast<UStaticMeshComponent>(PrimitiveComponent)->SetSimulatePhysics(true);
-	
 
-	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
 void ACooking::BeginPlay()
 {
-	Super::BeginPlay();
+	AOC2Actor::BeginPlay();
 	
 }
 
 // Called every frame
 void ACooking::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	AOC2Actor::Tick(DeltaTime);
 
 }
 

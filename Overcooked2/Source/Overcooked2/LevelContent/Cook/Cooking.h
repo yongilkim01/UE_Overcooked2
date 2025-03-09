@@ -61,13 +61,10 @@ protected:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	class UTimeEventComponent* TimeEvent = nullptr;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	ECookingType CookingType = ECookingType::ECT_NONE;
 
 	const FIngredientDataRow* IngredientDataTable = nullptr;
 
-	class UPrimitiveComponent* PrimitiveComponent = nullptr;
 private:	
 };

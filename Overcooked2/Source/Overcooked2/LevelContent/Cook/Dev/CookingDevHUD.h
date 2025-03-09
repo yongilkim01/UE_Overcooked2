@@ -24,9 +24,10 @@ public:
 	}
 
 protected:
-
 	virtual void BeginPlay() override;
 	virtual void Tick(float _DeltaTime) override;
+
+	void HandleUIInput();
 
 
 	UPROPERTY(EditAnywhere, Category = "Cooking")

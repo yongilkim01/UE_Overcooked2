@@ -16,11 +16,14 @@ public:
 	// Sets default values for this actor's properties
 	AIngredient();
 
+	// Network
+
 
 	// 상자에서 꺼냈을 때
 	UFUNCTION(BlueprintCallable)
 	AIngredient* Init(EIngredientType Type);
 	
+	// 조리 완료 시
 	UFUNCTION(BlueprintCallable)
 	AIngredient* ChangeState(EIngredientState State);
 
@@ -67,15 +70,17 @@ protected:
 
 	void Offset(FVector Pos, FRotator Rot);
 
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+
 private:
 	void DeactivateHighlight();
 	void ActivateHighlight();
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	EIngredientType IngredientType = EIngredientType::EIT_NONE;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	EIngredientState CurIngredientState = EIngredientState::EIS_NONE;
 
 

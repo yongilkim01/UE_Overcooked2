@@ -1,31 +1,43 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+Ôªø// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "LevelContent/Cook/Ingredient.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 AIngredient::AIngredient()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
+	SetReplicates(true);
+	SetReplicateMovement(true);
 
 	CookingType = ECookingType::ECT_INGREDIENT;
-
 
 }
 
 // Called when the game starts or when spawned
 void AIngredient::BeginPlay()
 {
-	Super::BeginPlay();
+	ACooking::BeginPlay();
+
+	if (true == HasAuthority())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ÏÑúÎ≤ÑÏóêÏÑú Ïä§Ìè∞ ÏÑ±Í≥µ"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("ÌÅ¥ÎùºÏù¥Ïñ∏Ìä∏ÏóêÏÑú Î≥µÏ†ú ÏÑ±Í≥µ"));
+	}
 
 }
 
 // Called every frame
 void AIngredient::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+	ACooking::Tick(DeltaTime);
 
 }
 
@@ -33,8 +45,8 @@ AIngredient* AIngredient::Init(EIngredientType Type)
 {
 	UOC2GameInstance* GameInst = Cast<UOC2GameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
 	FName Name = GameInst->GetIngredientDataTableRowName(Type);
-	
-	// 1. «ÿ¥Á ¿Á∑· ≈∏¿‘¿« µ•¿Ã≈Õ «‡ √ﬂ√‚
+
+	// 1. Ìï¥Îãπ Ïû¨Î£å ÌÉÄÏûÖÏùò Îç∞Ïù¥ÌÑ∞ Ìñâ Ï∂îÏ∂ú
 	// FIngredientDataRow IngredientDataTable
 	IngredientDataTable = &GameInst->GetIngredientDataRow(Name);
 	if (nullptr == IngredientDataTable)
@@ -43,7 +55,8 @@ AIngredient* AIngredient::Init(EIngredientType Type)
 	}
 
 	// 2. Setting
-	StaticMeshComponent->SetStaticMesh(IngredientDataTable->BaseMesh);
+	StaticMeshComponent->SetStaticMesh(GameInst->GetIngredientStaticMesh(Name.ToString()));
+	//StaticMeshComponent->SetStaticMesh(IngredientDataTable->BaseMesh);
 	IngredientType = IngredientDataTable->IngredientType;
 	CurIngredientState = IngredientDataTable->StateRows[0].PrevIngredientState;
 
@@ -53,6 +66,15 @@ AIngredient* AIngredient::Init(EIngredientType Type)
 	Offset(Location, Rotation);
 
 	return this;
+}
+
+
+void AIngredient::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AIngredient, IngredientType);
+	DOREPLIFETIME(AIngredient, CurIngredientState);
 }
 
 void AIngredient::Offset(FVector Pos, FRotator Rot)
@@ -102,7 +124,7 @@ AIngredient* AIngredient::ChangeState(EIngredientState State)
 
 void AIngredient::DeactivateHighlight()
 {
-	if (bIsHighlighted)
+	if (true == bIsHighlighted)
 	{
 		RestoreMaterial();
 		for (int i = 0; i < StaticMeshComponent->GetNumMaterials(); i++)
@@ -115,7 +137,7 @@ void AIngredient::DeactivateHighlight()
 
 void AIngredient::ActivateHighlight()
 {
-	if (bIsHighlighted)
+	if (true == bIsHighlighted)
 	{
 		ApplyMaterialHighlight();
 	}
