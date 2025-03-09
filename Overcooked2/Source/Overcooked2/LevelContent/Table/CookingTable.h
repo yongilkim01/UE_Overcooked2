@@ -21,7 +21,10 @@ public:
 	// Sets default values for this actor's properties
 	ACookingTable();
 
-	virtual ACooking* Interact(AActor* ChefActor) { return nullptr; };
+	virtual ACooking* Interact(AActor* ChefActor) 
+	{ 
+		return CookingPtr; 
+	}
 
 	/*UFUNCTION(BlueprintCallable)
 	virtual void SetAndSpawnCooking(AActor* ChefActor, ACooking* CookingObj)
@@ -43,7 +46,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsOccupied() const
 	{
-		return bOccupied;
+		return bIsOccupied;
 	}
 
 protected:
@@ -58,7 +61,7 @@ protected:
 	// 상호작용 중인가?
 	bool bIsInteracting = false;
 
-	bool bOccupied = false;
+	bool bIsOccupied = false;
 
 private:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
@@ -70,7 +73,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Cooking", meta = (AllowPrivateAccess = "true"))
 	bool bCanOvercook = false;
 
-	
+	class ACooking* CookingPtr = nullptr;
 	
 	// 테이블이 사용 가능한가?
 

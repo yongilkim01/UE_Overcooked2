@@ -23,13 +23,20 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	class AIngredient* SpawnIngredient(AActor* ChefActor, EIngredientType Ingredient);
+	void SetIngredient(EIngredientType IngredientTypeSetting);
+
+	UFUNCTION(BlueprintCallable)
+	class AIngredient* SpawnIngredient(AActor* ChefActor/*, EIngredientType Ingredient*/);
 
 	UFUNCTION(BlueprintCallable)
 	virtual ACooking* Interact(AActor* ChefActor) override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual void PlaceItem(ACooking* Item) override;
 protected:
 
 private:
 	
+	EIngredientType IngredientType = EIngredientType::EIT_NONE;
+	ACooking* PlacedItem = nullptr;
 };

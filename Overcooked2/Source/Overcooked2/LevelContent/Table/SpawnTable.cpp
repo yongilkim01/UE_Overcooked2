@@ -4,6 +4,7 @@
 #include "LevelContent/Table/SpawnTable.h"
 #include <Global/Data/IngredientDataTable.h>
 #include "Kismet/GameplayStatics.h"
+#include <Character/OC2Character.h>
 
 ASpawnTable::ASpawnTable()
 {
@@ -20,8 +21,13 @@ void ASpawnTable::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void ASpawnTable::SetIngredient(EIngredientType IngredientTypeSetting)
+{
+	IngredientType = IngredientTypeSetting;
+}
 
-AIngredient* ASpawnTable::SpawnIngredient(AActor* ChefActor, EIngredientType IngredientType)
+
+AIngredient* ASpawnTable::SpawnIngredient(AActor* ChefActor/*, EIngredientType IngredientType*/)
 {
 
 	FActorSpawnParameters SpawnParameters; // 적절한 오버로딩 함수 호출을 위해(회전값 추가), FActorSpawnParameters 사용
@@ -35,6 +41,7 @@ AIngredient* ASpawnTable::SpawnIngredient(AActor* ChefActor, EIngredientType Ing
 
 	AIngredient* NewIngredient = GetWorld()->SpawnActor<AIngredient>(AIngredient::StaticClass(), Location, Rotator, SpawnParameters);
 	NewIngredient->Init(IngredientType);
+
 	//재료 월드에 스폰, Init
 
 	// 액터에 부착
@@ -54,10 +61,45 @@ AIngredient* ASpawnTable::SpawnIngredient(AActor* ChefActor, EIngredientType Ing
 
 ACooking* ASpawnTable::Interact(AActor* ChefActor)
 {
-	if (false == bOccupied)
+	AOC2Character* Chef = Cast<AOC2Character>(ChefActor);
+	ACooking* TempCooking = nullptr;
+	
+	if (false == bIsOccupied)
 	{
-		//return SpawnIngredient(ChefActor);
+		if (true == Chef->IsHolding())
+		{
+			// 박스 위는 비어있고 셰프는 무언가를 들고 있다. 
+			PlaceItem(TempCooking);
+		}
+		else
+		{
+			SpawnIngredient(ChefActor);
+		}
+	}
+	else
+	{
+		// 박스 위에 무언가가 있음
+		return PlacedItem;
+
+		//PlacedItem이 외부 Cooking과 상호작용 하는 경우
+		// 1. 조합 가능한 경우
+		// 2. 빈접시와 요리가 있는 접시의 경우
 	}
 
-	return nullptr;
+}
+
+void ASpawnTable::PlaceItem(ACooking* Item)
+{
+	ACooking* TempCooking = Item;
+	
+	/*ECookingType TempCookingType = TempCooking->GetCookingType();
+
+	if (ECookingType::ECT_INGREDIENT == TempCookingType)
+	{
+
+	}
+	else
+	{
+
+	}*/
 }
